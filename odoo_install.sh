@@ -30,7 +30,7 @@ IS_ENTERPRISE="False"
 # Installs postgreSQL V14 instead of defaults (e.g V12 for Ubuntu 20/22) - this improves performance
 INSTALL_POSTGRESQL_FOURTEEN="True"
 # Set this to True if you want to install Nginx!
-INSTALL_NGINX="False"
+INSTALL_NGINX="True"
 # Set the superadmin password - if GENERATE_RANDOM_PASSWORD is set to "True" we will automatically generate a random password, otherwise we use this one
 OE_SUPERADMIN="admin"
 # Set to "True" to generate a random password, "False" to use the variable in OE_SUPERADMIN
@@ -92,6 +92,28 @@ fi
 
 echo -e "\n---- Creating the ODOO PostgreSQL User  ----"
 sudo su - postgres -c "createuser -s $OE_USER" 2> /dev/null || true
+
+#--------------------------------------------------
+# Check Python version and install Python 3.10 if not present
+#--------------------------------------------------
+echo -e "\n---- Checking for Python 3.10 installation ----"
+PYTHON_VERSION=$(python3 -V 2>&1 | grep -Po '(?<=Python )(.+)')
+if [[ -z "$PYTHON_VERSION" ]]; then
+    echo "Python 3 is not installed. Installing Python 3.10..."
+    sudo apt-get install -y software-properties-common
+    sudo add-apt-repository -y ppa:deadsnakes/ppa
+    sudo apt-get update
+    sudo apt-get install -y python3.10
+elif [[ $(printf '3.10\n%s' "$PYTHON_VERSION" | sort -V | head -n1) != "3.10" ]]; then
+    echo "Python 3.10 or greater is not installed. Upgrading to Python 3.10..."
+    sudo apt-get install -y software-properties-common
+    sudo add-apt-repository -y ppa:deadsnakes/ppa
+    sudo apt-get update
+    sudo apt-get install -y python3.10
+else
+    echo "Python 3.10 or greater is already installed."
+fi
+
 
 #--------------------------------------------------
 # Install Dependencies
