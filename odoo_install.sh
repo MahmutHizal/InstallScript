@@ -104,12 +104,14 @@ if [[ -z "$PYTHON_VERSION" ]]; then
     sudo add-apt-repository -y ppa:deadsnakes/ppa
     sudo apt-get update
     sudo apt-get install -y python3.10
+    sudo -H pip3 install --upgrade pip3
 elif [[ $(printf '3.10\n%s' "$PYTHON_VERSION" | sort -V | head -n1) != "3.10" ]]; then
     echo "Python 3.10 or greater is not installed. Upgrading to Python 3.10..."
     sudo apt-get install -y software-properties-common
     sudo add-apt-repository -y ppa:deadsnakes/ppa
     sudo apt-get update
     sudo apt-get install -y python3.10
+    sudo -H pip3 install --upgrade pip3
 else
     echo "Python 3.10 or greater is already installed."
 fi
